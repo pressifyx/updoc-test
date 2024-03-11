@@ -1,19 +1,32 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-const DateRangePicker = () => {
-  const [fromDate, setFromDate] = useState("");
+const DateRangePicker = ({ setfromDate, settoDate }) => {
+  const [fromDate, setFromDate] = useState('');
   const [fromError, setFromError] = useState(false);
-  const [toDate, setToDate] = useState("");
+  const [toDate, setToDate] = useState('');
   const [toError, setToError] = useState(false);
+
+  // Fetch default value from Redux store
+  const defaultValue = useSelector(
+    (state) => state.formOneCertificate.alldata[3]
+  );
+
+  useEffect(() => {
+    if (defaultValue) {
+      setfromDate(new Date(defaultValue.fromDate));
+      settoDate(new Date(defaultValue.toDate));
+    }
+  }, [defaultValue]);
 
   // set the dates of today on page render
   useEffect(() => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     setFromDate(formattedDate);
     setToDate(formattedDate);
@@ -41,6 +54,8 @@ const DateRangePicker = () => {
     ) {
       setFromError(true);
     } else {
+      setfromDate(fromDate);
+      settoDate(toDate);
       setFromError(false);
     }
   };
@@ -64,6 +79,8 @@ const DateRangePicker = () => {
       setToError(true);
     } else {
       setToError(false);
+      setfromDate(fromDate);
+      settoDate(toDate);
     }
   };
 
@@ -72,15 +89,17 @@ const DateRangePicker = () => {
     e.preventDefault();
 
     if (fromError || toError) {
-      alert("Please fill up the fields by fullfiling the conditions!");
+      alert('Please fill up the fields by fullfiling the conditions!');
     } else {
       console.log(fromDate, toDate);
-      alert("Form sent Successfully!");
+      setfromDate(fromDate);
+      settodate(toDate);
+      alert('Form sent Successfully!');
     }
   };
 
   return (
-    <section className="py-12 md:py-20 relative">
+    <section className="py-6">
       <div className="container mx-auto px-4">
         <div>
           {/* form */}
@@ -125,14 +144,6 @@ const DateRangePicker = () => {
                 </p>
               )}
             </div>
-
-            {/* submit button */}
-            <button
-              type="submit"
-              className="bg-[#684490] text-white mt-6 py-3 w-full rounded-md"
-            >
-              Continue
-            </button>
           </form>
         </div>
       </div>
